@@ -1,0 +1,82 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2761
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fmodern\fcharset0 Courier;\f2\fmodern\fcharset0 Courier-Oblique;
+\f3\fmodern\fcharset0 Courier-Bold;}
+{\colortbl;\red255\green255\blue255;\red153\green168\blue186;\red32\green32\blue32;\red191\green100\blue38;
+\red109\green109\blue109;\red254\green187\blue91;\red88\green118\blue71;\red41\green50\blue40;\red133\green96\blue154;
+\red86\green132\blue173;}
+{\*\expandedcolortbl;;\csgenericrgb\c60000\c65882\c72941;\csgenericrgb\c12549\c12549\c12549;\csgenericrgb\c74902\c39216\c14902;
+\csgenericrgb\c42745\c42745\c42745;\csgenericrgb\c99608\c73333\c35686;\csgenericrgb\c34510\c46275\c27843;\csgenericrgb\c16078\c19608\c15686;\csgenericrgb\c52157\c37647\c60392;
+\csgenericrgb\c33725\c51765\c67843;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Utilizand functiile pentru procesare submultimi din Kotlin se va prelua un fisier text ( creat de programator cu cateva propozitii in el ) si se vor sterge primele doua caractere daca cuvantul are minim patru caractere. Se va utiliza combinatie cu  lambda peste colectii pentru procesare.\
+\
+\
+propozitii.txt\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs26 \cf2 \cb3 Kotlin este un limbaj modern.\
+Programarea func\uc0\u539 ional\u259  este puternic\u259 .\
+Lambda-urile fac codul concis.\
+\
+\
+\cf4 import \cf2 java.io.File\
+\
+\cf5 // pasi logici\
+// 1. citim text din fisier\
+// 2. separam propozitii\
+// 3. pentru fiecare propozitie separam in cuvinte\
+// 4. verificam daca un cuvant are <= 4 caractere\
+// 5. daca da, stergem primele 2 caractere\
+// 6. reuneste la rezultatul final\
+\
+\cf4 fun \cf6 main\cf2 ()\{\
+\
+    \cf4 val \cf2 filename = \cf7 "src/main/resources/propozitii.txt"\
+\cf5 //    val processedText = File(filename).readLines() // pasul 1\
+//        .flatMap \{ it.split("\\\\s+".toRegex())\} // pasul 2 + 3\
+//        .map \{ word ->\
+//            if(word.length >= 4) // pasul 4\
+//                word.drop(2) // pasul 5\
+//            else\
+//                word\
+//        \}\
+//        .joinToString \{ " " \} // pasul 6\
+\
+    \cf4 val \cf2 lines = File(filename).
+\f2\i \cf6 readLines
+\f1\i0 \cf2 ()\
+    \cf4 val \cf2 cuvinte = lines.
+\f2\i \cf6 flatMap 
+\f3\i0\b \cf2 \{ it
+\f1\b0 .
+\f2\i \cf6 split
+\f1\i0 \cf2 (\cf7 "\cf4 \cb8 \\\\\cf7 s+\cb3 "\cf2 .
+\f2\i \cf6 toRegex
+\f1\i0 \cf2 ())
+\f3\b \}\
+    
+\f1\b0 \cf4 val \cf2 cuvinteTrimmed = cuvinte.
+\f2\i \cf6 map
+\f3\i0\b \cf2 \{
+\f1\b0 \cf4 if \cf2 (
+\f3\b it
+\f1\b0 .\cf9 length \cf2 >= \cf10 4\cf2 ) 
+\f3\b it
+\f1\b0 .
+\f2\i \cf6 drop
+\f1\i0 \cf2 (\cf10 2\cf2 ) \cf4 else 
+\f3\b \cf2 it\}\
+    
+\f1\b0 \cf4 val \cf2 final = cuvinteTrimmed.
+\f2\i \cf6 joinToString 
+\f3\i0\b \cf2 \{ it \}\
+    
+\f2\i\b0 println
+\f1\i0 (final)\
+   \cf5 // println(processedText)\
+\cf2 \}\
+\
+\
+*** se iau in considerare partile comentate si se sterge partea de jos care e doar o verificare (sunt bune ambele variante totusi)}

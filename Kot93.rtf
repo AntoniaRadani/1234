@@ -1,0 +1,150 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2761
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fmodern\fcharset0 Courier;\f2\fmodern\fcharset0 Courier-Oblique;
+\f3\fmodern\fcharset0 Courier-Bold;}
+{\colortbl;\red255\green255\blue255;\red191\green100\blue38;\red32\green32\blue32;\red153\green168\blue186;
+\red109\green109\blue109;\red133\green96\blue154;\red88\green118\blue71;\red86\green132\blue173;\red254\green187\blue91;
+}
+{\*\expandedcolortbl;;\csgenericrgb\c74902\c39216\c14902;\csgenericrgb\c12549\c12549\c12549;\csgenericrgb\c60000\c65882\c72941;
+\csgenericrgb\c42745\c42745\c42745;\csgenericrgb\c52157\c37647\c60392;\csgenericrgb\c34510\c46275\c27843;\csgenericrgb\c33725\c51765\c67843;\csgenericrgb\c99608\c73333\c35686;
+}
+\paperw11900\paperh16840\margl1440\margr1440\vieww9020\viewh5820\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Sa se scrie un program Kotlin care va utiliza subclase active (cu actori) pentru procesarea simultana unui hashMap bazata. Clasa de basa va stabili operatiile (adunare, scadere, inmultire, impartire) iar subclasele vor pune la dispozitie obiecte care se executa in fire separate. se va prezenta diagrama de clase si de obiecte. se va explica maniera de aplicare a principiilor SOLID\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs26 \cf2 \cb3 import \cf4 kotlinx.coroutines.*\
+\cf2 import \cf4 kotlinx.coroutines.channels.actor\
+\
+\cf5 // Mesajele comune pentru opera\uc0\u539 ii\
+\cf2 sealed class \cf4 OperatieMsg \{\
+    \cf2 abstract val \cf6 key\cf4 : String\
+    \cf2 abstract val \cf6 value\cf4 : Double\
+\}\
+\
+\cf2 data class \cf4 Aduna(\cf2 override val \cf6 key\cf4 : String\cf2 , override val \cf6 value\cf4 : Double) : OperatieMsg()\
+\cf2 data class \cf4 Scade(\cf2 override val \cf6 key\cf4 : String\cf2 , override val \cf6 value\cf4 : Double) : OperatieMsg()\
+\cf2 data class \cf4 Inmulteste(\cf2 override val \cf6 key\cf4 : String\cf2 , override val \cf6 value\cf4 : Double) : OperatieMsg()\
+\cf2 data class \cf4 Imparte(\cf2 override val \cf6 key\cf4 : String\cf2 , override val \cf6 value\cf4 : Double) : OperatieMsg()\
+\cf2 object \cf4 Afiseaza : OperatieMsg() \{\
+    \cf2 override val \cf6 key\cf4 : String = \cf7 ""\
+    \cf2 override val \cf6 value\cf4 : Double = \cf8 0.0\
+\cf4 \}\
+\
+\cf5 // Clasa de baz\uc0\u259  pentru actori\
+\cf2 abstract class \cf4 OperatieActor(\
+    \cf2 protected val \cf6 sharedMap\cf4 : MutableMap<String\cf2 , \cf4 Double>\cf2 ,\
+    \cf4 scope: CoroutineScope\
+) \{\
+    \cf2 val \cf6 actor \cf4 = scope.
+\f2\i \cf9 actor
+\f1\i0 \cf4 <OperatieMsg> 
+\f3\b \{\
+        
+\f1\b0 \cf2 for \cf4 (msg \cf2 in \cf6 channel\cf4 ) \{\
+            \cf2 when \cf4 (msg) \{\
+                \cf2 is \cf4 Aduna -> aduna(msg.\cf6 key\cf2 , \cf4 msg.\cf6 value\cf4 )\
+                \cf2 is \cf4 Scade -> scade(msg.\cf6 key\cf2 , \cf4 msg.\cf6 value\cf4 )\
+                \cf2 is \cf4 Inmulteste -> inmulteste(msg.\cf6 key\cf2 , \cf4 msg.\cf6 value\cf4 )\
+                \cf2 is \cf4 Imparte -> imparte(msg.\cf6 key\cf2 , \cf4 msg.\cf6 value\cf4 )\
+                Afiseaza -> afiseaza()\
+            \}\
+        \}\
+    
+\f3\b \}\
+\
+    
+\f1\b0 \cf2 protected abstract suspend fun \cf9 aduna\cf4 (key: String\cf2 , \cf4 value: Double)\
+    \cf2 protected abstract suspend fun \cf9 scade\cf4 (key: String\cf2 , \cf4 value: Double)\
+    \cf2 protected abstract suspend fun \cf9 inmulteste\cf4 (key: String\cf2 , \cf4 value: Double)\
+    \cf2 protected abstract suspend fun \cf9 imparte\cf4 (key: String\cf2 , \cf4 value: Double)\
+    \cf2 protected abstract suspend fun \cf9 afiseaza\cf4 ()\
+\}\
+\
+\cf5 // Implement\uc0\u259 ri concrete (toate pot modifica sharedMap)\
+\cf2 class \cf4 OperatieConcretaActor(sharedMap: MutableMap<String\cf2 , \cf4 Double>\cf2 , \cf4 scope: CoroutineScope) :\
+    OperatieActor(sharedMap\cf2 , \cf4 scope) \{\
+\
+    \cf2 override suspend fun \cf9 aduna\cf4 (key: String\cf2 , \cf4 value: Double) \{\
+        \cf2 val \cf4 old = \cf6 sharedMap\cf4 .getOrDefault(key\cf2 , \cf8 0.0\cf4 )\
+        \cf6 sharedMap\cf4 [key] = old + value\
+        
+\f2\i println
+\f1\i0 (\cf7 "Adunat \cf2 $\cf4 value\cf7  la '\cf2 $\cf4 key\cf7 ', noua valoare: \cf2 $\{\cf6 sharedMap\cf4 [key]\cf2 \}\cf7 "\cf4 )\
+    \}\
+\
+    \cf2 override suspend fun \cf9 scade\cf4 (key: String\cf2 , \cf4 value: Double) \{\
+        \cf2 val \cf4 old = \cf6 sharedMap\cf4 .getOrDefault(key\cf2 , \cf8 0.0\cf4 )\
+        \cf6 sharedMap\cf4 [key] = old - value\
+        
+\f2\i println
+\f1\i0 (\cf7 "Sc\uc0\u259 zut \cf2 $\cf4 value\cf7  la '\cf2 $\cf4 key\cf7 ', noua valoare: \cf2 $\{\cf6 sharedMap\cf4 [key]\cf2 \}\cf7 "\cf4 )\
+    \}\
+\
+    \cf2 override suspend fun \cf9 inmulteste\cf4 (key: String\cf2 , \cf4 value: Double) \{\
+        \cf2 val \cf4 old = \cf6 sharedMap\cf4 .getOrDefault(key\cf2 , \cf8 0.0\cf4 )\
+        \cf6 sharedMap\cf4 [key] = old * value\
+        
+\f2\i println
+\f1\i0 (\cf7 "\'cenmul\uc0\u539 it cu \cf2 $\cf4 value\cf7  valoarea '\cf2 $\cf4 key\cf7 ', noua valoare: \cf2 $\{\cf6 sharedMap\cf4 [key]\cf2 \}\cf7 "\cf4 )\
+    \}\
+\
+    \cf2 override suspend fun \cf9 imparte\cf4 (key: String\cf2 , \cf4 value: Double) \{\
+        \cf2 if \cf4 (value == \cf8 0.0\cf4 ) \{\
+            
+\f2\i println
+\f1\i0 (\cf7 "Eroare: \'cemp\uc0\u259 r\u539 ire la 0 pentru '\cf2 $\cf4 key\cf7 '!"\cf4 )\
+            \cf2 return\
+        \cf4 \}\
+        \cf2 val \cf4 old = \cf6 sharedMap\cf4 .getOrDefault(key\cf2 , \cf8 0.0\cf4 )\
+        \cf6 sharedMap\cf4 [key] = old / value\
+        
+\f2\i println
+\f1\i0 (\cf7 "\'cemp\uc0\u259 r\u539 it valoarea '\cf2 $\cf4 key\cf7 ' la \cf2 $\cf4 value\cf7 , noua valoare: \cf2 $\{\cf6 sharedMap\cf4 [key]\cf2 \}\cf7 "\cf4 )\
+    \}\
+\
+    \cf2 override suspend fun \cf9 afiseaza\cf4 () \{\
+        
+\f2\i println
+\f1\i0 (\cf7 "Starea curent\uc0\u259  a HashMap-ului:"\cf4 )\
+        \cf6 sharedMap\cf4 .
+\f2\i \cf9 forEach 
+\f3\i0\b \cf4 \{ 
+\f1\b0 (k\cf2 , \cf4 v) 
+\f3\b -> 
+\f2\i\b0 println
+\f1\i0 (\cf7 "  \cf2 $\cf4 k\cf7  = \cf2 $\cf4 v\cf7 "\cf4 ) 
+\f3\b \}\
+    
+\f1\b0 \}\
+\}\
+\
+\cf5 // Main care ruleaz\uc0\u259  actorii simultan\
+\cf2 fun \cf9 main\cf4 (): Unit = 
+\f2\i runBlocking 
+\f3\i0\b \{\
+    
+\f1\b0 \cf2 val \cf4 sharedMap = 
+\f2\i mutableMapOf
+\f1\i0 <String\cf2 , \cf4 Double>()\
+\
+    \cf2 val \cf4 operatieActor = OperatieConcretaActor(sharedMap\cf2 , this\cf4 )\
+\
+    \cf2 val \cf4 actor = operatieActor.\cf6 actor\
+\
+    \cf5 // Trimitem mesaje concurent pentru procesare\
+    \cf4 actor.send(Aduna(\cf7 "a"\cf2 , \cf8 10.0\cf4 ))\
+    actor.send(Aduna(\cf7 "b"\cf2 , \cf8 5.0\cf4 ))\
+    actor.send(Inmulteste(\cf7 "a"\cf2 , \cf8 2.0\cf4 ))\
+    actor.send(Scade(\cf7 "b"\cf2 , \cf8 3.0\cf4 ))\
+    actor.send(Imparte(\cf7 "a"\cf2 , \cf8 4.0\cf4 ))\
+    actor.send(Afiseaza)\
+\
+    delay(\cf8 500\cf4 ) \cf5 // A\uc0\u537 tept\u259 m s\u259  se proceseze toate mesajele\
+\
+    \cf4 actor.close()\
+
+\f3\b \}\
+\
+}

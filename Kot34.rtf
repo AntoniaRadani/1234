@@ -1,0 +1,185 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2761
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fmodern\fcharset0 Courier;\f2\fmodern\fcharset0 Courier-Oblique;
+\f3\fmodern\fcharset0 Courier-Bold;}
+{\colortbl;\red255\green255\blue255;\red109\green109\blue109;\red32\green32\blue32;\red191\green100\blue38;
+\red153\green168\blue186;\red133\green96\blue154;\red254\green187\blue91;\red26\green47\blue26;\red88\green118\blue71;
+\red41\green50\blue40;\red86\green132\blue173;}
+{\*\expandedcolortbl;;\csgenericrgb\c42745\c42745\c42745;\csgenericrgb\c12549\c12549\c12549;\csgenericrgb\c74902\c39216\c14902;
+\csgenericrgb\c60000\c65882\c72941;\csgenericrgb\c52157\c37647\c60392;\csgenericrgb\c99608\c73333\c35686;\csgenericrgb\c10196\c18431\c10196;\csgenericrgb\c34510\c46275\c27843;
+\csgenericrgb\c16078\c19608\c15686;\csgenericrgb\c33725\c51765\c67843;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Sa se scrie un program Kotlin care preia un fisier text (scris de programator) la intrare, organizeaza cuvintele intr-un arbore binar utilizand o constrangere la alegere iar apoi cu ajutorul unei clase specifice si al functorilor se vor afisa portiuni din arbore\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs26 \cf2 \cb3 // un arbore binar cu cuvinte selectate dintr-un .txt\
+// se vor afisa bucati din arbore cu o clasa specifica funcorilor\
+\
+\cf4 import \cf5 java.io.File\
+\
+\cf2 // Nodul de arbore binar\
+\cf4 sealed class \cf5 BinaryTree \{\
+    \cf4 data class \cf5 Node(\cf4 val \cf6 value\cf5 : String\cf4 , var \cf6 left\cf5 : BinaryTree = Empty\cf4 , var \cf6 right\cf5 : BinaryTree = Empty) : BinaryTree()\
+    \cf4 object \cf5 Empty : BinaryTree()\
+\}\
+\
+\cf2 // Constr\'e2ngere: inserare lexicografic\uc0\u259 \
+\cf4 fun \cf7 insert\cf5 (tree: BinaryTree\cf4 , \cf5 word: String): BinaryTree = \cf4 when \cf5 (tree) \{\
+    \cf4 is \cf5 BinaryTree.Empty -> BinaryTree.Node(word)\
+    \cf4 is \cf5 BinaryTree.Node -> \{\
+        \cf4 if \cf5 (word < \cb8 tree\cb3 .\cf6 value\cf5 ) \{\
+            \cb8 tree\cb3 .\cf6 left \cf5 = 
+\f2\i insert
+\f1\i0 (\cb8 tree\cb3 .\cf6 left\cf4 , \cf5 word)\
+        \} \cf4 else \cf5 \{\
+            \cb8 tree\cb3 .\cf6 right \cf5 = 
+\f2\i insert
+\f1\i0 (\cb8 tree\cb3 .\cf6 right\cf4 , \cf5 word)\
+        \}\
+        tree\
+    \}\
+\}\
+\
+\cf2 // Functor simplu: aplic\uc0\u259  o func\u539 ie pe toate nodurile p\u259 str\'e2nd structura\
+\cf4 fun \cf7 mapTree\cf5 (tree: BinaryTree\cf4 , \cf5 f: (String) -> String): BinaryTree = \cf4 when \cf5 (tree) \{\
+    \cf4 is \cf5 BinaryTree.Empty -> BinaryTree.Empty\
+    \cf4 is \cf5 BinaryTree.Node -> BinaryTree.Node(\
+        f(\cb8 tree\cb3 .\cf6 value\cf5 )\cf4 ,\
+        
+\f2\i \cf5 mapTree
+\f1\i0 (\cb8 tree\cb3 .\cf6 left\cf4 , \cf5 f)\cf4 ,\
+        
+\f2\i \cf5 mapTree
+\f1\i0 (\cb8 tree\cb3 .\cf6 right\cf4 , \cf5 f)\
+    )\
+\}\
+\
+\cf2 // Afi\uc0\u537 are in-order (pentru testare)\
+\cf4 fun \cf7 printTree\cf5 (tree: BinaryTree) \{\
+    \cf4 when \cf5 (tree) \{\
+        \cf4 is \cf5 BinaryTree.Empty -> \{\}\
+        \cf4 is \cf5 BinaryTree.Node -> \{\
+            
+\f2\i printTree
+\f1\i0 (\cb8 tree\cb3 .\cf6 left\cf5 )\
+            
+\f2\i println
+\f1\i0 (\cb8 tree\cb3 .\cf6 value\cf5 )\
+            
+\f2\i printTree
+\f1\i0 (\cb8 tree\cb3 .\cf6 right\cf5 )\
+        \}\
+    \}\
+\}\
+\
+\cf2 // Filtrare: p\uc0\u259 streaz\u259  doar cuvintele care respect\u259  o condi\u539 ie\
+\cf4 fun \cf7 filterTree\cf5 (tree: BinaryTree\cf4 , \cf5 predicate: (String) -> Boolean): BinaryTree = \cf4 when \cf5 (tree) \{\
+    \cf4 is \cf5 BinaryTree.Empty -> BinaryTree.Empty\
+    \cf4 is \cf5 BinaryTree.Node -> \{\
+        \cf4 val \cf5 leftFiltered = 
+\f2\i filterTree
+\f1\i0 (\cb8 tree\cb3 .\cf6 left\cf4 , \cf5 predicate)\
+        \cf4 val \cf5 rightFiltered = 
+\f2\i filterTree
+\f1\i0 (\cb8 tree\cb3 .\cf6 right\cf4 , \cf5 predicate)\
+        \cf4 if \cf5 (predicate(\cb8 tree\cb3 .\cf6 value\cf5 )) \{\
+            BinaryTree.Node(\cb8 tree\cb3 .\cf6 value\cf4 , \cf5 leftFiltered\cf4 , \cf5 rightFiltered)\
+        \} \cf4 else \cf5 \{\
+            \cf2 // exclude nodul curent dar p\uc0\u259 streaz\u259  subarborii\
+            
+\f2\i \cf5 mergeTrees
+\f1\i0 (leftFiltered\cf4 , \cf5 rightFiltered)\
+        \}\
+    \}\
+\}\
+\
+\cf2 // Utilitar: combin\uc0\u259  doi arbori (simplist)\
+\cf4 fun \cf7 mergeTrees\cf5 (t1: BinaryTree\cf4 , \cf5 t2: BinaryTree): BinaryTree \{\
+    \cf4 return when \cf5 (t1) \{\
+        \cf4 is \cf5 BinaryTree.Empty -> t2\
+        \cf4 is \cf5 BinaryTree.Node -> 
+\f2\i insert
+\f1\i0 (
+\f2\i mergeTrees
+\f1\i0 (\cb8 t1\cb3 .\cf6 left\cf4 , 
+\f2\i \cf5 mergeTrees
+\f1\i0 (\cb8 t1\cb3 .\cf6 right\cf4 , \cf5 t2))\cf4 , \cf5 \cb8 t1\cb3 .\cf6 value\cf5 )\
+    \}\
+\}\
+\
+\cf2 // === Main ===\
+\cf4 fun \cf7 main\cf5 () \{\
+    \cf4 val \cf5 words = File(\cf9 "text.txt"\cf5 ).
+\f2\i \cf7 readText
+\f1\i0 \cf5 ()\
+        .
+\f2\i \cf7 split
+\f1\i0 \cf5 (Regex(\cf9 "\cf4 \cb10 \\\\\cf9 s+\cb3 "\cf5 ))\
+        .
+\f2\i \cf7 map 
+\f3\i0\b \cf5 \{ it
+\f1\b0 .
+\f2\i \cf7 trim
+\f1\i0 \cf5 ().
+\f2\i \cf7 lowercase
+\f1\i0 \cf5 () 
+\f3\b \}\
+        
+\f1\b0 .
+\f2\i \cf7 filter 
+\f3\i0\b \cf5 \{ it
+\f1\b0 .
+\f2\i \cf7 isNotBlank
+\f1\i0 \cf5 () 
+\f3\b \}\
+\
+    
+\f1\b0 \cf4 var \cf5 tree: BinaryTree = BinaryTree.Empty\
+    \cf4 for \cf5 (word \cf4 in \cf5 words) \{\
+        tree = 
+\f2\i insert
+\f1\i0 (tree\cf4 , \cf5 word)\
+    \}\
+\
+    
+\f2\i println
+\f1\i0 (\cf9 "=== Arbore complet ==="\cf5 )\
+    
+\f2\i printTree
+\f1\i0 (tree)\
+\
+    
+\f2\i println
+\f1\i0 (\cf9 "\cf4 \\n\cf9 === Cuvinte transformate cu f(x) = x.uppercase() ==="\cf5 )\
+    \cf4 val \cf5 mappedTree = 
+\f2\i mapTree
+\f1\i0 (tree) 
+\f3\b \{ it
+\f1\b0 .
+\f2\i \cf7 uppercase
+\f1\i0 \cf5 () 
+\f3\b \}\
+    
+\f2\i\b0 printTree
+\f1\i0 (mappedTree)\
+\
+    
+\f2\i println
+\f1\i0 (\cf9 "\cf4 \\n\cf9 === Cuvinte cu lungime >= 6 ==="\cf5 )\
+    \cf4 val \cf5 filteredTree = 
+\f2\i filterTree
+\f1\i0 (tree) 
+\f3\b \{ it
+\f1\b0 .\cf6 length \cf5 >= \cf11 6 
+\f3\b \cf5 \}\
+    
+\f2\i\b0 printTree
+\f1\i0 (filteredTree)\
+\}\
+\
+}

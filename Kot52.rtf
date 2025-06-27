@@ -1,0 +1,102 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2761
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fmodern\fcharset0 Courier;\f2\fmodern\fcharset0 Courier-Oblique;
+\f3\fmodern\fcharset0 Courier-Bold;}
+{\colortbl;\red255\green255\blue255;\red191\green100\blue38;\red32\green32\blue32;\red254\green187\blue91;
+\red153\green168\blue186;\red109\green109\blue109;\red86\green132\blue173;\red88\green118\blue71;\red133\green96\blue154;
+\red31\green136\blue139;}
+{\*\expandedcolortbl;;\csgenericrgb\c74902\c39216\c14902;\csgenericrgb\c12549\c12549\c12549;\csgenericrgb\c99608\c73333\c35686;
+\csgenericrgb\c60000\c65882\c72941;\csgenericrgb\c42745\c42745\c42745;\csgenericrgb\c33725\c51765\c67843;\csgenericrgb\c34510\c46275\c27843;\csgenericrgb\c52157\c37647\c60392;
+\csgenericrgb\c12157\c53333\c54510;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww8560\viewh5280\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Utilizand ADT - uri (eventual lambda) si transformari specifice colectiilor avand la intrare multimea A = \{1..100\} sa se scrie un program Kotlin care determina numarul submultimilor cu patru elemente ale multimii A care contin elementul 1 (in componenta numarului)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs26 \cf2 \cb3 fun \cf4 main\cf5 () \{\
+    \cf6 // Construim mul\uc0\u539 imea A = \{1, 2, ..., 100\}\
+    \cf2 val \cf5 A = (\cf7 1\cf5 ..\cf7 100\cf5 ).
+\f2\i \cf4 toList
+\f1\i0 \cf5 ()\
+\
+    \cf6 // Submul\uc0\u539 imi de 4 elemente care con\u539 in obligatoriu 1\
+    \cf2 val \cf5 submultimiCu1 = A\
+        .
+\f2\i \cf4 filter 
+\f3\i0\b \cf5 \{ it 
+\f1\b0 != \cf7 1 
+\f3\b \cf5 \}                  
+\f1\b0 \cf6 // Excludem 1 pentru c\uc0\u259  \'eel ad\u259 ug\u259 m manual\
+        \cf5 .
+\f2\i \cf4 combinations
+\f1\i0 \cf5 (\cf7 3\cf5 )                     \cf6 // Combin\uc0\u259 ri de 3 elemente din restul\
+        \cf5 .
+\f2\i \cf4 map 
+\f3\i0\b \cf5 \{ it 
+\f1\b0 + \cf7 1 
+\f3\b \cf5 \}                      
+\f1\b0 \cf6 // Ad\uc0\u259 ug\u259 m 1 la fiecare submul\u539 ime\
+        \cf5 .
+\f2\i \cf4 filter 
+\f3\i0\b \cf5 \{ it
+\f1\b0 .contains(\cf7 1\cf5 ) 
+\f3\b \}           
+\f1\b0 \cf6 // Verific\uc0\u259 m c\u259  1 e inclus (op\u539 ional)\
+\
+    // Afi\uc0\u537 \u259 m rezultatul\
+    
+\f2\i \cf5 println
+\f1\i0 (\cf8 "Num\uc0\u259 r de submul\u539 imi de 4 elemente care con\u539 in 1: \cf2 $\{\cf5 submultimiCu1.\cf9 size\cf2 \}\cf8 "\cf5 )\
+\
+    \cf6 // (Op\uc0\u539 ional) Afi\u537 \u259 m primele 5 submul\u539 imi ca exemplu\
+    
+\f2\i \cf5 println
+\f1\i0 (\cf8 "Exemple de submul\uc0\u539 imi:"\cf5 )\
+    submultimiCu1.
+\f2\i \cf4 take
+\f1\i0 \cf5 (\cf7 5\cf5 ).
+\f2\i \cf4 forEach 
+\f3\i0\b \cf5 \{ 
+\f2\i\b0 println
+\f1\i0 (
+\f3\b it
+\f1\b0 .
+\f2\i \cf4 sorted
+\f1\i0 \cf5 ()) 
+\f3\b \}\
+
+\f1\b0 \}\
+\
+\cf6 // Func\uc0\u539 ie de extensie care genereaz\u259  combina\u539 ii de k elemente dintr-o list\u259 \
+\cf2 fun \cf5 <\cf10 T\cf5 > List<\cf10 T\cf5 >.\cf4 combinations\cf5 (k: Int): List<List<\cf10 T\cf5 >> \{\
+    \cf2 if \cf5 (k == \cf7 0\cf5 ) \cf2 return 
+\f2\i \cf5 listOf
+\f1\i0 (
+\f2\i emptyList
+\f1\i0 ())\
+    \cf2 if \cf5 (\cf2 this\cf5 .isEmpty()) \cf2 return 
+\f2\i \cf5 emptyList
+\f1\i0 ()\
+    \cf2 val \cf5 head = 
+\f2\i \cf4 first
+\f1\i0 \cf5 ()\
+    \cf2 val \cf5 tail = 
+\f2\i \cf4 drop
+\f1\i0 \cf5 (\cf7 1\cf5 )\
+    \cf2 val \cf5 withHead = tail.
+\f2\i \cf4 combinations
+\f1\i0 \cf5 (k - \cf7 1\cf5 ).
+\f2\i \cf4 map 
+\f3\i0\b \cf5 \{ 
+\f2\i\b0 listOf
+\f1\i0 (head) + 
+\f3\b it \}\
+    
+\f1\b0 \cf2 val \cf5 withoutHead = tail.
+\f2\i \cf4 combinations
+\f1\i0 \cf5 (k)\
+    \cf2 return \cf5 withHead + withoutHead\
+\}\
+\
+}

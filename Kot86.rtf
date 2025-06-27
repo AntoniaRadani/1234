@@ -1,0 +1,174 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2761
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fmodern\fcharset0 Courier;\f2\fmodern\fcharset0 Courier-Oblique;
+\f3\fmodern\fcharset0 Courier-Bold;}
+{\colortbl;\red255\green255\blue255;\red153\green168\blue186;\red32\green32\blue32;\red109\green109\blue109;
+\red191\green100\blue38;\red254\green187\blue91;\red133\green96\blue154;\red88\green118\blue71;}
+{\*\expandedcolortbl;;\csgenericrgb\c60000\c65882\c72941;\csgenericrgb\c12549\c12549\c12549;\csgenericrgb\c42745\c42745\c42745;
+\csgenericrgb\c74902\c39216\c14902;\csgenericrgb\c99608\c73333\c35686;\csgenericrgb\c52157\c37647\c60392;\csgenericrgb\c34510\c46275\c27843;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww8860\viewh7360\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Utilizand Kotlin si OOP sa se creeze (KBD sau din program) un grup de oameni care pot efectua (cu totii) urmatoarele activiati : mananca, beau, danseaza. Fiecare om este diferit deci functiilor vor primi parametri diferiti. Pornind de la urmatoarele declaratii sa se creeze un program care raspunde la intrebari : ion mananca mere, bea bere si danseaza cu femei. Vasile mananca pere bea vodca si danseaza cu barbati. Alex bea vin mananca prajituri brune si danseaza cu sefii. exemplu de intrebare : Cu cine poate dansa Vasile si ce pot manca barbatii dar ce pot manca femeile. Se va folosi polimorfismul. Se va desena diagrama UML (clase si obiecte). Se va explica maniera de aplicare a principiilor SOLID.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs26 \cf2 \cb3 \
+
+\f1 \cf4 // interfata pentru activitatile pe care le pot face oamenii\
+\cf5 interface \cf2 Activitati\{\
+    \cf5 fun \cf6 mananca\cf2 (): String\
+    \cf5 fun \cf6 bea\cf2 (): String\
+    \cf5 fun \cf6 danseaza\cf2 () : String\
+\}\
+\
+\cf4 // enumaratie pt genul F/M\
+\cf5 enum class \cf2 Gen\{\
+    
+\f2\i \cf7 FEMEIE
+\f1\i0 \cf5 , 
+\f2\i \cf7 BARBAT\
+
+\f1\i0 \cf2 \}\
+\
+\cf4 // clasa abstracta care descrie omul in general\
+\cf5 abstract class \cf2 Om(\cf5 val \cf7 nume \cf2 : String\cf5 , val \cf7 gen\cf2 : Gen) : Activitati\
+\
+\cf5 class \cf2 Ion : Om(\cf8 "Ion"\cf5 , \cf2 Gen.
+\f2\i \cf7 BARBAT
+\f1\i0 \cf2 ) \{\
+    \cf5 override fun \cf6 mananca\cf2 () = \cf8 "mere"\
+    \cf5 override fun \cf6 bea\cf2 () = \cf8 "bere"\
+    \cf5 override fun \cf6 danseaza\cf2 () = \cf8 "cu femei"\
+\cf2 \}\
+\
+\cf5 class \cf2 Vasile : Om(\cf8 "Vasile"\cf5 , \cf2 Gen.
+\f2\i \cf7 BARBAT
+\f1\i0 \cf2 ) \{\
+    \cf5 override fun \cf6 mananca\cf2 () = \cf8 "pere"\
+    \cf5 override fun \cf6 bea\cf2 () = \cf8 "vodc\uc0\u259 "\
+    \cf5 override fun \cf6 danseaza\cf2 () = \cf8 "cu b\uc0\u259 rba\u539 i"\
+\cf2 \}\
+\
+\cf5 class \cf2 Alex : Om(\cf8 "Alex"\cf5 , \cf2 Gen.
+\f2\i \cf7 BARBAT
+\f1\i0 \cf2 ) \{\
+    \cf5 override fun \cf6 mananca\cf2 () = \cf8 "pr\uc0\u259 jituri brune"\
+    \cf5 override fun \cf6 bea\cf2 () = \cf8 "vin"\
+    \cf5 override fun \cf6 danseaza\cf2 () = \cf8 "cu \uc0\u537 efii"\
+\cf2 \}\
+\
+\cf5 class \cf2 Maria : Om(\cf8 "Maria"\cf5 , \cf2 Gen.
+\f2\i \cf7 FEMEIE
+\f1\i0 \cf2 ) \{\
+    \cf5 override fun \cf6 mananca\cf2 () = \cf8 "sushi"\
+    \cf5 override fun \cf6 bea\cf2 () = \cf8 "ap\uc0\u259 "\
+    \cf5 override fun \cf6 danseaza\cf2 () = \cf8 "cu Ion"\
+\cf2 \}\
+\
+\cf4 // FACTORY DE OAMENI\
+\cf5 object \cf2 OmFactory \{\
+    \cf5 fun \cf6 creeazaOm\cf2 (nume: String): Om? = \cf5 when \cf2 (nume) \{\
+        \cf8 "Ion" \cf2 -> Ion()\
+        \cf8 "Vasile" \cf2 -> Vasile()\
+        \cf8 "Alex" \cf2 -> Alex()\
+        \cf8 "Maria" \cf2 -> Maria()\
+        \cf5 else \cf2 -> \cf5 null\
+    \cf2 \}\
+\}\
+\
+\cf4 // GRUP DE OAMENI\
+\cf5 class \cf2 GrupOameni \{\
+    \cf5 private val \cf7 oameni \cf2 = 
+\f2\i mutableListOf
+\f1\i0 <Om>()\
+\
+    \cf5 fun \cf6 adauga\cf2 (om: Om) = \cf7 oameni\cf2 .add(om)\
+\
+    \cf5 fun \cf6 intreabaCuCineDanseaza\cf2 (nume: String): String? =\
+        \cf7 oameni\cf2 .
+\f2\i \cf6 find 
+\f3\i0\b \cf2 \{ it
+\f1\b0 .\cf7 nume \cf2 == nume 
+\f3\b \}
+\f1\b0 ?.danseaza()\
+\
+    \cf5 fun \cf6 cePotManca\cf2 (gen: Gen): Set<String> =\
+        \cf7 oameni\cf2 .
+\f2\i \cf6 filter 
+\f3\i0\b \cf2 \{ it
+\f1\b0 .\cf7 gen \cf2 == gen 
+\f3\b \}
+\f1\b0 .
+\f2\i \cf6 map 
+\f3\i0\b \cf2 \{ it
+\f1\b0 .mananca() 
+\f3\b \}
+\f1\b0 .
+\f2\i \cf6 toSet
+\f1\i0 \cf2 ()\
+\
+    \cf5 fun \cf6 afiseazaTot\cf2 () \{\
+        \cf7 oameni\cf2 .
+\f2\i \cf6 forEach 
+\f3\i0\b \cf2 \{\
+            
+\f2\i\b0 println
+\f1\i0 (\cf8 "\cf5 $\{
+\f3\b \cf2 it
+\f1\b0 .\cf7 nume\cf5 \}\cf8  m\uc0\u259 n\'e2nc\u259  \cf5 $\{
+\f3\b \cf2 it
+\f1\b0 .mananca()\cf5 \}\cf8 , bea \cf5 $\{
+\f3\b \cf2 it
+\f1\b0 .bea()\cf5 \}\cf8  \uc0\u537 i danseaz\u259  \cf5 $\{
+\f3\b \cf2 it
+\f1\b0 .danseaza()\cf5 \}\cf8 ."\cf2 )\
+        
+\f3\b \}\
+    
+\f1\b0 \}\
+\}\
+\
+\cf5 fun \cf6 main\cf2 () \{\
+    \cf5 val \cf2 grup = GrupOameni()\
+\
+    \cf4 // folosind factory pentru a crea obiecte\
+    
+\f2\i \cf2 listOf
+\f1\i0 (\cf8 "Ion"\cf5 , \cf8 "Vasile"\cf5 , \cf8 "Alex"\cf5 , \cf8 "Maria"\cf2 ).
+\f2\i \cf6 forEach 
+\f3\i0\b \cf2 \{ 
+\f1\b0 nume 
+\f3\b ->\
+        
+\f1\b0 OmFactory.creeazaOm(nume)?.
+\f2\i \cf6 let 
+\f3\i0\b \cf2 \{ 
+\f1\b0 grup.adauga(
+\f3\b it
+\f1\b0 ) 
+\f3\b \}\
+    \}\
+\
+    
+\f2\i\b0 println
+\f1\i0 (\cf8 "=== ACTIVIT\uc0\u258 \u538 ILE TUTUROR ==="\cf2 )\
+    grup.afiseazaTot()\
+\
+    
+\f2\i println
+\f1\i0 (\cf8 "\cf5 \\n\cf8 === INTEROG\uc0\u258 RI ==="\cf2 )\
+    
+\f2\i println
+\f1\i0 (\cf8 "Cu cine poate dansa Vasile? \cf5 $\{\cf2 grup.intreabaCuCineDanseaza(\cf8 "Vasile"\cf2 )\cf5 \}\cf8 "\cf2 )\
+    
+\f2\i println
+\f1\i0 (\cf8 "Ce pot m\'e2nca b\uc0\u259 rba\u539 ii? \cf5 $\{\cf2 grup.cePotManca(Gen.
+\f2\i \cf7 BARBAT
+\f1\i0 \cf2 )\cf5 \}\cf8 "\cf2 )\
+    
+\f2\i println
+\f1\i0 (\cf8 "Ce pot m\'e2nca femeile? \cf5 $\{\cf2 grup.cePotManca(Gen.
+\f2\i \cf7 FEMEIE
+\f1\i0 \cf2 )\cf5 \}\cf8 "\cf2 )\
+\}\
+}

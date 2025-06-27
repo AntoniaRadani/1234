@@ -1,0 +1,146 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2761
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fmodern\fcharset0 Courier;\f2\fmodern\fcharset0 Courier-Oblique;
+\f3\fmodern\fcharset0 Courier-Bold;}
+{\colortbl;\red255\green255\blue255;\red109\green109\blue109;\red32\green32\blue32;\red191\green100\blue38;
+\red153\green168\blue186;\red133\green96\blue154;\red254\green187\blue91;\red88\green118\blue71;\red86\green132\blue173;
+}
+{\*\expandedcolortbl;;\csgenericrgb\c42745\c42745\c42745;\csgenericrgb\c12549\c12549\c12549;\csgenericrgb\c74902\c39216\c14902;
+\csgenericrgb\c60000\c65882\c72941;\csgenericrgb\c52157\c37647\c60392;\csgenericrgb\c99608\c73333\c35686;\csgenericrgb\c34510\c46275\c27843;\csgenericrgb\c33725\c51765\c67843;
+}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Utilizand Kotlin si OOP sa se creeze un program care permite modelarea unei sali de curs cu tot cu operatii pentru obiecte. Se vor folosi clase enum. Se va desena diagrama UML (clase si obiecte). Se va explica maniera de aplicare a principiilor SOLID\
+\
+** ar trebui schimbat din lab room in sala curs \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs26 \cf2 \cb3 // Enum pentru tipurile de obiecte din laborator\
+\cf4 enum class \cf5 TipObiect \{\
+    
+\f2\i \cf6 COMPUTER
+\f1\i0 \cf4 , 
+\f2\i \cf6 DESK
+\f1\i0 \cf4 , 
+\f2\i \cf6 CHAIR
+\f1\i0 \cf4 , 
+\f2\i \cf6 EQUIPMENT\
+
+\f1\i0 \cf5 \}\
+\
+\cf2 // Interfa\uc0\u539 \u259  pentru obiecte care pot fi descrise\
+\cf4 interface \cf5 Describable \{\
+    \cf4 fun \cf7 describe\cf5 (): String\
+\}\
+\
+\cf2 // Clasa abstract\uc0\u259  de baz\u259  pentru obiectele laboratorului\
+\cf4 abstract class \cf5 LabObject(\cf4 val \cf6 id\cf5 : Int\cf4 , val \cf6 tip\cf5 : TipObiect) : Describable\
+\
+\cf2 // Subclase concrete pentru fiecare tip de obiect\
+\cf4 class \cf5 Computer(id: Int\cf4 , val \cf6 brand\cf5 : String) : LabObject(id\cf4 , \cf5 TipObiect.
+\f2\i \cf6 COMPUTER
+\f1\i0 \cf5 ) \{\
+    \cf4 override fun \cf7 describe\cf5 () = \cf8 "Computer(id=\cf4 $\cf6 id\cf8 , brand=\cf4 $\cf6 brand\cf8 )"\
+\cf5 \}\
+\
+\cf4 class \cf5 Desk(id: Int\cf4 , val \cf6 material\cf5 : String) : LabObject(id\cf4 , \cf5 TipObiect.
+\f2\i \cf6 DESK
+\f1\i0 \cf5 ) \{\
+    \cf4 override fun \cf7 describe\cf5 () = \cf8 "Desk(id=\cf4 $\cf6 id\cf8 , material=\cf4 $\cf6 material\cf8 )"\
+\cf5 \}\
+\
+\cf4 class \cf5 Chair(id: Int\cf4 , val \cf6 type\cf5 : String) : LabObject(id\cf4 , \cf5 TipObiect.
+\f2\i \cf6 CHAIR
+\f1\i0 \cf5 ) \{\
+    \cf4 override fun \cf7 describe\cf5 () = \cf8 "Chair(id=\cf4 $\cf6 id\cf8 , type=\cf4 $\cf6 type\cf8 )"\
+\cf5 \}\
+\
+\cf4 class \cf5 Equipment(id: Int\cf4 , val \cf6 name\cf5 : String) : LabObject(id\cf4 , \cf5 TipObiect.
+\f2\i \cf6 EQUIPMENT
+\f1\i0 \cf5 ) \{\
+    \cf4 override fun \cf7 describe\cf5 () = \cf8 "Equipment(id=\cf4 $\cf6 id\cf8 , name=\cf4 $\cf6 name\cf8 )"\
+\cf5 \}\
+\
+\cf2 // Clasa care gestioneaz\uc0\u259  obiectele din laborator\
+\cf4 class \cf5 LabRoom \{\
+    \cf4 private val \cf6 objects \cf5 = 
+\f2\i mutableListOf
+\f1\i0 <LabObject>()\
+\
+    \cf4 fun \cf7 addObject\cf5 (obj: LabObject) \{\
+        \cf6 objects\cf5 .add(obj)\
+    \}\
+\
+    \cf4 fun \cf7 removeObjectById\cf5 (id: Int): Boolean \{\
+        \cf4 return \cf6 objects\cf5 .removeIf 
+\f3\b \{ it
+\f1\b0 .\cf6 id \cf5 == id 
+\f3\b \}\
+    
+\f1\b0 \}\
+\
+    \cf4 fun \cf7 findObjectById\cf5 (id: Int): LabObject? \{\
+        \cf4 return \cf6 objects\cf5 .
+\f2\i \cf7 find 
+\f3\i0\b \cf5 \{ it
+\f1\b0 .\cf6 id \cf5 == id 
+\f3\b \}\
+    
+\f1\b0 \}\
+\
+    \cf4 fun \cf7 getAllObjects\cf5 (): List<LabObject> = \cf6 objects\cf5 .
+\f2\i \cf7 toList
+\f1\i0 \cf5 () \cf2 // returneaz\uc0\u259  o copie imutabil\u259 \
+\cf5 \}\
+\
+\cf2 // Clasa responsabil\uc0\u259  doar cu afi\u537 area obiectelor din laborator\
+\cf4 class \cf5 LabRoomPrinter(\cf4 private val \cf6 labRoom\cf5 : LabRoom) \{\
+    \cf4 fun \cf7 printAllObjects\cf5 () \{\
+        \cf4 val \cf5 all = \cf6 labRoom\cf5 .getAllObjects()\
+        \cf4 if \cf5 (all.isEmpty()) \{\
+            
+\f2\i println
+\f1\i0 (\cf8 "Lab room is empty."\cf5 )\
+        \} \cf4 else \cf5 \{\
+            all.
+\f2\i \cf7 forEach 
+\f3\i0\b \cf5 \{ 
+\f2\i\b0 println
+\f1\i0 (
+\f3\b it
+\f1\b0 .describe()) 
+\f3\b \}\
+        
+\f1\b0 \}\
+    \}\
+\}\
+\
+\cf2 // Programul principal\
+\cf4 fun \cf7 main\cf5 () \{\
+    \cf4 val \cf5 lab = LabRoom()\
+\
+    lab.addObject(Computer(\cf9 1\cf4 , \cf8 "Dell"\cf5 ))\
+    lab.addObject(Desk(\cf9 2\cf4 , \cf8 "Wood"\cf5 ))\
+    lab.addObject(Desk(\cf9 3\cf4 , \cf8 "Metal"\cf5 ))\
+    lab.addObject(Chair(\cf9 4\cf4 , \cf8 "Office"\cf5 ))\
+    lab.addObject(Equipment(\cf9 5\cf4 , \cf8 "Projector"\cf5 ))\
+\
+    \cf4 val \cf5 printer = LabRoomPrinter(lab)\
+    
+\f2\i println
+\f1\i0 (\cf8 "Initial state of lab:"\cf5 )\
+    printer.printAllObjects()\
+\
+    
+\f2\i println
+\f1\i0 (\cf8 "\cf4 \\n\cf8 Removing object with id = 2 (Desk)"\cf5 )\
+    lab.removeObjectById(\cf9 2\cf5 )\
+\
+    
+\f2\i println
+\f1\i0 (\cf8 "\cf4 \\n\cf8 State of lab after removal:"\cf5 )\
+    printer.printAllObjects()\
+\}\
+\
+}

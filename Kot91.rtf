@@ -1,0 +1,163 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2761
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fmodern\fcharset0 Courier;\f2\fmodern\fcharset0 Courier-Bold;
+\f3\fmodern\fcharset0 Courier-Oblique;}
+{\colortbl;\red255\green255\blue255;\red191\green100\blue38;\red32\green32\blue32;\red153\green168\blue186;
+\red109\green109\blue109;\red133\green96\blue154;\red254\green187\blue91;\red86\green132\blue173;\red88\green118\blue71;
+}
+{\*\expandedcolortbl;;\csgenericrgb\c74902\c39216\c14902;\csgenericrgb\c12549\c12549\c12549;\csgenericrgb\c60000\c65882\c72941;
+\csgenericrgb\c42745\c42745\c42745;\csgenericrgb\c52157\c37647\c60392;\csgenericrgb\c99608\c73333\c35686;\csgenericrgb\c33725\c51765\c67843;\csgenericrgb\c34510\c46275\c27843;
+}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Sa se scrie un program Kotlin care va utiliza subclase active (cu mutex si lock) pentru procesarea simultana a unui hashMap bazata. clasa de baza va stabili operatiile (ex adunare scadere inmultire impartire), iar subclasele vor pune la dispozitie obiecte care se executa in fire separate. se va prezenta diagrama de clase si de obiecte. se va explica maniera de aplicare a principiilor solid\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs26 \cf2 \cb3 import \cf4 kotlinx.coroutines.*\
+\cf2 import \cf4 kotlinx.coroutines.sync.Mutex\
+\cf2 import \cf4 kotlinx.coroutines.sync.withLock\
+\cf2 import \cf4 java.lang.IllegalArgumentException\
+\cf2 import \cf4 java.util.concurrent.ConcurrentHashMap\
+\
+\cf5 // un program care utilizeaza subclase active ( mutex si lock ) pt procesarea unui hashmap\
+// clasa de baza : operatii precum adunare, scadere, inmultire, impartire\
+// subclasele : obiecte care se executa in fire separate\
+// diagrama de clase si obiecte + SOLID\
+\
+\cf2 abstract class \cf4 Operatie(    \cf2 protected val \cf6 sharedMap \cf4 : MutableMap<String\cf2 , \cf4 Double>\cf2 ,\
+                            protected val \cf6 mutex \cf4 : kotlinx.coroutines.sync.Mutex\
+) \{\
+    \cf2 abstract suspend fun \cf7 execute\cf4 (cheie : String\cf2 , \cf4 valoare : Double) \cf5 // suspend -> poate fi folosita intr-o corutina\
+\cf4 \}\
+\
+\cf2 class \cf4 Adunare(  sharedMap : MutableMap<String\cf2 , \cf4 Double>\cf2 ,\
+                \cf4 mutex : Mutex ) : Operatie(sharedMap\cf2 , \cf4 mutex)\{\
+    \cf2 override suspend fun \cf7 execute\cf4 (cheie: String\cf2 , \cf4 valoare: Double) \{\
+        \cf6 mutex\cf4 .withLock
+\f2\b \{\
+            
+\f1\b0 \cf2 val \cf4 veche = \cf6 sharedMap\cf4 .getOrDefault(cheie\cf2 , \cf8 0.0\cf4 )\
+            \cf6 sharedMap\cf4 [cheie] = veche + valoare\
+            
+\f3\i println
+\f1\i0 (\cf9 "Adunare pentru elementul \cf2 $\cf4 cheie\cf9  : \cf2 $\cf4 veche\cf9  + \cf2 $\cf4 valoare\cf9  = \cf2 $\{\cf6 sharedMap\cf4 [cheie]\cf2 \}\cf9 "\cf4 )\
+        
+\f2\b \}\
+    
+\f1\b0 \}\
+\
+\}\
+\
+\cf2 class \cf4 Scadere(  sharedMap : MutableMap<String\cf2 , \cf4 Double>\cf2 ,\
+                \cf4 mutex : Mutex) : Operatie(sharedMap\cf2 , \cf4 mutex)\{\
+    \cf2 override suspend fun \cf7 execute\cf4 (cheie: String\cf2 , \cf4 valoare: Double) \{\
+        \cf6 mutex\cf4 .withLock 
+\f2\b \{\
+            
+\f1\b0 \cf2 val \cf4 veche = \cf6 sharedMap\cf4 .getOrDefault(cheie\cf2 , \cf8 0.0\cf4 )\
+            \cf6 sharedMap\cf4 [cheie] = veche - valoare\
+            
+\f3\i println
+\f1\i0 (\cf9 "Scadere pentru elementul \cf2 $\cf4 cheie\cf9  : \cf2 $\cf4 veche\cf9  - \cf2 $\cf4 valoare\cf9  = \cf2 $\{\cf6 sharedMap\cf4 [cheie]\cf2 \}\cf9 "\cf4 )\
+        
+\f2\b \}\
+    
+\f1\b0 \}\
+\
+\}\
+\
+\cf2 class \cf4 Inmultire(    sharedMap : MutableMap<String\cf2 , \cf4 Double>\cf2 ,\
+                    \cf4 mutex : Mutex) : Operatie(sharedMap\cf2 , \cf4 mutex)\{\
+    \cf2 override suspend fun \cf7 execute\cf4 (cheie: String\cf2 , \cf4 valoare: Double) \{\
+        \cf6 mutex\cf4 .withLock 
+\f2\b \{\
+            
+\f1\b0 \cf2 val \cf4 veche = \cf6 sharedMap\cf4 .getOrDefault(cheie\cf2 , \cf8 0.0\cf4 )\
+            \cf6 sharedMap\cf4 [cheie] = veche * valoare\
+            
+\f3\i println
+\f1\i0 (\cf9 "Inmultire pentru elementul \cf2 $\cf4 cheie\cf9  : \cf2 $\cf4 veche\cf9  * \cf2 $\cf4 valoare\cf9  = \cf2 $\{\cf6 sharedMap\cf4 [cheie]\cf2 \}\cf9 "\cf4 )\
+        
+\f2\b \}\
+    
+\f1\b0 \}\
+\
+\}\
+\
+\cf2 class \cf4 Impartire(    sharedMap : MutableMap<String\cf2 , \cf4 Double>\cf2 ,\
+                    \cf4 mutex : Mutex) : Operatie(sharedMap\cf2 , \cf4 mutex)\{\
+    \cf2 override suspend fun \cf7 execute\cf4 (cheie: String\cf2 , \cf4 valoare: Double) \{\
+        \cf6 mutex\cf4 .withLock 
+\f2\b \{\
+            
+\f1\b0 \cf2 val \cf4 veche = \cf6 sharedMap\cf4 .getOrDefault(cheie\cf2 , \cf8 0.0\cf4 )\
+            \cf2 if\cf4 (valoare != \cf8 0.0\cf4 ) \{\
+                \cf6 sharedMap\cf4 [cheie] = veche / valoare\
+                
+\f3\i println
+\f1\i0 (\cf9 "Impartire pentru elementul \cf2 $\cf4 cheie\cf9  : \cf2 $\cf4 veche\cf9  / \cf2 $\cf4 valoare\cf9  = \cf2 $\{\cf6 sharedMap\cf4 [cheie]\cf2 \}\cf9 "\cf4 )\
+            \}\
+            \cf2 else throw \cf4 IllegalArgumentException(\cf9 "Impartirea la 0 nu este permisa!"\cf4 )\
+        
+\f2\b \}\
+    
+\f1\b0 \}\
+\
+\}\
+\
+\cf2 fun \cf7 main\cf4 () = 
+\f3\i runBlocking 
+\f2\i0\b \{\
+    
+\f1\b0 \cf2 val \cf4 map = ConcurrentHashMap<String\cf2 , \cf4 Double>()\
+    \cf2 val \cf4 mutex = 
+\f3\i Mutex
+\f1\i0 ()\
+\
+    \cf2 val \cf4 adunare = Adunare(map\cf2 , \cf4 mutex)\
+    \cf2 val \cf4 scadere = Scadere(map\cf2 , \cf4 mutex)\
+    \cf2 val \cf4 inmultire = Inmultire(map\cf2 , \cf4 mutex)\
+    \cf2 val \cf4 impartire = Impartire(map\cf2 , \cf4 mutex)\
+\
+    \cf2 val \cf4 joburi = 
+\f3\i listOf
+\f1\i0 (\
+        
+\f3\i \cf7 launch 
+\f2\i0\b \cf4 \{ 
+\f1\b0 adunare.execute(\cf9 "x"\cf2 , \cf8 10.0\cf4 ) 
+\f2\b \}
+\f1\b0 \cf2 ,\
+        
+\f3\i \cf7 launch 
+\f2\i0\b \cf4 \{ 
+\f1\b0 scadere.execute(\cf9 "y"\cf2 , \cf8 5.0\cf4 ) 
+\f2\b \}
+\f1\b0 \cf2 ,\
+        
+\f3\i \cf7 launch 
+\f2\i0\b \cf4 \{ 
+\f1\b0 inmultire.execute(\cf9 "x"\cf2 , \cf8 2.0\cf4 ) 
+\f2\b \}
+\f1\b0 \cf2 ,\
+        
+\f3\i \cf7 launch 
+\f2\i0\b \cf4 \{ 
+\f1\b0 impartire.execute(\cf9 "y"\cf2 , \cf8 3.0\cf4 ) 
+\f2\b \}\
+    
+\f1\b0 )\
+\
+    joburi.
+\f3\i \cf7 forEach 
+\f2\i0\b \cf4 \{ it
+\f1\b0 .join() 
+\f2\b \}\
+\
+    
+\f3\i\b0 println
+\f1\i0 (\cf9 "Rezultat final: \cf2 $\cf4 map\cf9 "\cf4 )\
+
+\f2\b \}\
+}
